@@ -1,0 +1,13 @@
+body {
+  background-color: antiquewhite;
+  font-family: sans-serif;
+  font-size: 30px;
+}
+
+h1 {
+  color: var(--primary);
+}
+
+h2 {
+  color: var(--secoundary);
+}
