@@ -2,11 +2,22 @@ import { Heading } from './components/Heading';
 
 import './styles/theme.css';
 import './styles/global.css';
-import { TimerIcon } from 'lucide-react';
+import {
+  HomeIcon,
+  RotateCcwClock,
+  SettingsIcon,
+  SunIcon,
+  TimerIcon,
+} from 'lucide-react';
 
 export function App() {
   return (
     <>
+      <HomeIcon />
+      <RotateCcwClock />
+      <SettingsIcon />
+      <SunIcon />
+
       <Heading>
         Olá Mundo App - 01
         <button>
