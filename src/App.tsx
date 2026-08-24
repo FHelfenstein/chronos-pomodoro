@@ -6,11 +6,12 @@ import './styles/global.css';
 export function App() {
   return (
     <>
-      <Heading />
+      <Heading attr={123} attr2='String'>
+        Olá Mundo App - 01
+      </Heading>
+
       <p>
-        <h2>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. At nostrum
-        </h2>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. At nostrum
         dolores eligendi quibusdam aliquam nam culpa incidunt veritatis quos
         veniam! Impedit mollitia earum assumenda, minus rem consequatur ipsam
         explicabo temporibus.
