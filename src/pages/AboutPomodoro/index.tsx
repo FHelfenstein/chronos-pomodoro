@@ -9,7 +9,6 @@ export function AboutPomodoro() {
       <Container>
         <GenericHtml>
           <Heading>A Técnica Pomodoro 🍅</Heading>
-
           <p>
             A Técnica Pomodoro é uma metodologia de produtividade criada por{' '}
             <strong>Francesco Cirillo</strong>, que consiste em dividir o

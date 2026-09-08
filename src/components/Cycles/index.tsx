@@ -16,7 +16,7 @@ export function Cycles() {
 
   return (
     <div className={styles.cycles}>
-      <span>Ciclos:</span>
+      <span>Ciclo(s):</span>
 
       <div className={styles.cycleDots}>
         {cycleStep.map((_, index) => {

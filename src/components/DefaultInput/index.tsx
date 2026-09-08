@@ -6,16 +6,11 @@ type DefaultInputProps = {
 } & React.ComponentProps<'input'>;
 
 /**pegando todas as props desestruturadas do controle input com spread operator exemplo: ...props  */
-export function DefaultInput({
-  id,
-  type,
-  labelText,
-  ...props
-}: DefaultInputProps) {
+export function DefaultInput({ id, labelText, ...props }: DefaultInputProps) {
   return (
     <>
       {labelText && <label htmlFor={id}>{labelText}</label>}
-      <input className={styles.input} id={id} type={type} {...props} />
+      <input className={styles.input} id={id} {...props} />
     </>
   );
 }

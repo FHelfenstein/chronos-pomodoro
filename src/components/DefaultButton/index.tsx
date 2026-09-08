@@ -2,10 +2,10 @@ import styles from './styles.module.css';
 
 type DefaultButtonProps = {
   icon: React.ReactNode;
-  color?: 'green' | 'red';
+  color?: 'green' | 'red' | 'blue';
 } & React.ComponentProps<'button'>;
 
-/**pegando todas as props desestruturadas do controle input com spread operator exemplo: ...rest  */
+/**pegando todas as props desestruturadas do controle button com spread operator exemplo: ...props  */
 export function DefaultButton({
   icon,
   color = 'green',
