@@ -1,17 +1,70 @@
-import { PlayCircleIcon } from 'lucide-react';
+import { PlayCircleIcon, StopCircleIcon } from 'lucide-react';
 import { DefaultButton } from '../DefaultButton';
 import { DefaultInput } from '../DefaultInput';
 import { Cycles } from '../Cycles';
+import { useRef } from 'react';
+import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
+import type { TaskModel } from '../../models/TaskModel';
+import { getNextCycle } from '../../utils/getNextCycle';
+import { getNextCycleType } from '../../utils/getNextCycleType';
+import { formatSecondsToMinutes } from '../../utils/formatSecondsToMinutes';
 
 export function MainForm() {
+  const { state, setState } = useTaskContext();
+  const taskNameInput = useRef<HTMLInputElement>(null);
+
+  // ciclos
+  const nextCycle = getNextCycle(state.currentCycle);
+  const nextCycleType = getNextCycleType(nextCycle);
+
+  function handleCreateNewTask(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (taskNameInput.current === null) return;
+    const taskName = taskNameInput.current.value.trim();
+
+    if (!taskName) {
+      alert('Digite o nome da tarefa!');
+      return;
+    }
+
+    const newTask: TaskModel = {
+      id: Date.now().toString(),
+      name: taskName,
+      startDate: Date.now(),
+      completeDate: null,
+      interruptDate: null,
+      duration: state.config[nextCycleType],
+      type: nextCycleType,
+    };
+
+    const secondsRemaining = newTask.duration * 60;
+
+    setState(prevState => {
+      return {
+        ...prevState,
+        config: { ...prevState.config },
+        activeTask: newTask,
+        currentCycle: nextCycle,
+        secondsRemaining,
+        formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
+        tasks: [...prevState.tasks, newTask],
+      };
+    });
+  }
+
   return (
-    <form className='form' action=''>
+    <form onSubmit={handleCreateNewTask} className='form' action=''>
       <div className='formRow'>
         <DefaultInput
           id='input'
           type='text'
           labelText='task'
           placeholder='Digite algo'
+          //value={taskName}
+          //onChange={(e) => setTaskName(e.target.value)} // input controlado renderiza a cada tecla que está sendo digitada , seria interessante para input por exemplo de cpf que vai mudando a cor da borda , até que o cpf seja válido
+          ref={taskNameInput} // input não controlado vai renderizar somente quando submeter o formulário
+          disabled={!!state.activeTask} // quando tenho dois operadores de exclamação o primeiro converte null para boleano e o segunda faz a verificação se a tarefa está ativa
         />
       </div>
 
@@ -19,13 +72,30 @@ export function MainForm() {
         <p>Próximo intervalo é de 25min</p>
       </div>
 
-      <div className='formRow'>
-        <Cycles />
-      </div>
+      {state.currentCycle > 0 && (
+        <div className='formRow'>
+          <Cycles />
+        </div>
+      )}
 
       <div className='formRow'>
-        <DefaultButton icon={<PlayCircleIcon />} color='green' />
-        {/*<DefaultButton icon={<StopCircleIcon />} color='red' />*/}
+        {!state.activeTask ? (
+          <DefaultButton
+            icon={<PlayCircleIcon />}
+            color='green'
+            type='submit'
+            aria-label='Iniciar nova tarefa'
+            title='Iniciar nova tarefa'
+          />
+        ) : (
+          <DefaultButton
+            icon={<StopCircleIcon />}
+            color='red'
+            type='button'
+            aria-label='Interromper tarefa atual'
+            title='Interromper tarefa atual'
+          />
+        )}
       </div>
     </form>
   );
