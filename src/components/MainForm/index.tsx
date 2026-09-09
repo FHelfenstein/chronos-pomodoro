@@ -9,9 +9,10 @@ import { getNextCycleType } from '../../utils/getNextCycleType';
 import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
 import { Tips } from '../Tips';
 import type { TaskModel } from '../../models/TaskModel';
+import { TimerWorkerManager } from '../../workers/TimerWorkerManager';
 
 export function MainForm() {
-  const { state, dispatch } = useTaskContext();
+  const { state, dispatchTask } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
 
   // ciclos
@@ -39,7 +40,26 @@ export function MainForm() {
       type: nextCycleType,
     };
 
-    dispatch({ type: TaskActionTypes.START_TASK, payload: newTask });
+    dispatchTask({ type: TaskActionTypes.START_TASK, payload: newTask });
+
+    // worker para controlar o timer de cada task , toda vez que eu chamar uma nova task um novo worker é criado
+    const worker = TimerWorkerManager.getInstance();
+
+    worker.postMessage('FAVOR'); // Sim, posso fazer um favor
+    worker.postMessage('FALA_OI'); // OK: OI!
+    worker.postMessage('BLALBLA'); // Não entendi!
+    worker.postMessage('FECHAR'); // Tá bom, vou fechar
+
+    worker.onmessage(event => {
+      console.log('PRINCIPAL recebeu:', event.data);
+      worker.terminate();
+    });
+
+    /*
+    worker.onmessage = function (event) {
+      console.log('PRINCIPAL recebeu:', event.data);
+    };
+    */
   }
 
   function handleInterruptTask(
@@ -47,7 +67,7 @@ export function MainForm() {
   ) {
     e.preventDefault();
 
-    dispatch({ type: TaskActionTypes.INTERRUPT_TASK });
+    dispatchTask({ type: TaskActionTypes.INTERRUPT_TASK });
   }
 
   return (
