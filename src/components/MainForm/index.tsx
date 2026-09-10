@@ -9,7 +9,7 @@ import { getNextCycleType } from '../../utils/getNextCycleType';
 import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
 import { Tips } from '../Tips';
 import type { TaskModel } from '../../models/TaskModel';
-import { TimerWorkerManager } from '../../workers/TimerWorkerManager';
+import { showMessage } from '../../adapters/showMessage';
 
 export function MainForm() {
   const { state, dispatchTask } = useTaskContext();
@@ -21,12 +21,13 @@ export function MainForm() {
 
   function handleCreateNewTask(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    showMessage.dismiss();
 
     if (taskNameInput.current === null) return;
     const taskName = taskNameInput.current.value.trim();
 
     if (!taskName) {
-      alert('Digite o nome da tarefa!');
+      showMessage.warning('Digite o nome da tarefa!');
       return;
     }
 
@@ -42,24 +43,7 @@ export function MainForm() {
 
     dispatchTask({ type: TaskActionTypes.START_TASK, payload: newTask });
 
-    // worker para controlar o timer de cada task , toda vez que eu chamar uma nova task um novo worker é criado
-    const worker = TimerWorkerManager.getInstance();
-
-    worker.postMessage('FAVOR'); // Sim, posso fazer um favor
-    worker.postMessage('FALA_OI'); // OK: OI!
-    worker.postMessage('BLALBLA'); // Não entendi!
-    worker.postMessage('FECHAR'); // Tá bom, vou fechar
-
-    worker.onmessage(event => {
-      console.log('PRINCIPAL recebeu:', event.data);
-      worker.terminate();
-    });
-
-    /*
-    worker.onmessage = function (event) {
-      console.log('PRINCIPAL recebeu:', event.data);
-    };
-    */
+    showMessage.success('Tarefa iniciada');
   }
 
   function handleInterruptTask(
@@ -67,6 +51,8 @@ export function MainForm() {
   ) {
     e.preventDefault();
 
+    showMessage.dismiss();
+    showMessage.error('Tarefa interrompida!');
     dispatchTask({ type: TaskActionTypes.INTERRUPT_TASK });
   }
 
