@@ -9,8 +9,39 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { formatDate } from '../../utils/formatDate';
 import { getTaskStatus } from '../../utils/getTaskStatus';
 
+import { useState } from 'react';
+import { sortTasks, type SortTasksOptions } from '../../utils/sortTask';
+
 export function History() {
   const { state } = useTaskContext();
+
+  //  Aqui caso eu não queira ordenar por outras colunas da tabela estaria pronta minha função
+  //const sortedTasks = sortTasks({ tasks: state.tasks });
+
+  // Aqui é ordenação dinâmica aonde devo selecionar no Header da tabela qual campo quero ordenar e a direção (asc / desc)
+  const [sortTasksOptions, setSortTasksOptions] = useState<SortTasksOptions>(
+    () => {
+      return {
+        tasks: sortTasks({ tasks: state.tasks }),
+        field: 'startDate',
+        direction: 'desc',
+      };
+    },
+  );
+
+  function handleSortTasks({ field }: Pick<SortTasksOptions, 'field'>) {
+    const newDirection = sortTasksOptions.direction === 'desc' ? 'asc' : 'desc';
+
+    setSortTasksOptions({
+      tasks: sortTasks({
+        tasks: sortTasksOptions.tasks,
+        field,
+        direction: newDirection,
+      }),
+      direction: newDirection,
+      field,
+    });
+  }
 
   return (
     <MainTemplate>
@@ -33,9 +64,24 @@ export function History() {
           <table>
             <thead>
               <tr>
-                <th>Tarefa</th>
-                <th>Duração</th>
-                <th>Data</th>
+                <th
+                  onClick={() => handleSortTasks({ field: 'name' })}
+                  className={styles.thSort}
+                >
+                  Tarefa ↕
+                </th>
+                <th
+                  onClick={() => handleSortTasks({ field: 'duration' })}
+                  className={styles.thSort}
+                >
+                  Duração ↕
+                </th>
+                <th
+                  onClick={() => handleSortTasks({ field: 'startDate' })}
+                  className={styles.thSort}
+                >
+                  Data ↕
+                </th>
                 <th>Status</th>
                 <th>Tipo</th>
               </tr>
@@ -43,7 +89,7 @@ export function History() {
 
             <tbody>
               {/*Array.from({ length: 20 }).map((_, index) => {}*/}
-              {state.tasks.map(task => {
+              {sortTasksOptions.tasks.map(task => {
                 const taskTypeDictionary = {
                   workTime: 'Foco',
                   shortBreakTime: 'Descanso curto',
@@ -67,3 +113,10 @@ export function History() {
     </MainTemplate>
   );
 }
+
+// Exemplo de ordenação simples de um array , aqui está sendo ordenado a data de inicio da tarefa em ordem decrescente
+/*
+  const sortedTasks = [...state.tasks].sort((a, b) => {
+    return b.startDate - a.startDate;
+  });
+  */
