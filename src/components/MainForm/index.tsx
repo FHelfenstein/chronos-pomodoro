@@ -14,6 +14,7 @@ import { showMessage } from '../../adapters/showMessage';
 export function MainForm() {
   const { state, dispatchTask } = useTaskContext();
   const taskNameInput = useRef<HTMLInputElement>(null);
+  const lastTaskName = state.tasks[state.tasks.length - 1]?.name || '';
 
   // ciclos
   const nextCycle = getNextCycle(state.currentCycle);
@@ -68,6 +69,7 @@ export function MainForm() {
           //onChange={(e) => setTaskName(e.target.value)} // input controlado renderiza a cada tecla que está sendo digitada , seria interessante para input por exemplo de cpf que vai mudando a cor da borda , até que o cpf seja válido
           ref={taskNameInput} // input não controlado vai renderizar somente quando submeter o formulário
           disabled={!!state.activeTask} // quando tenho dois operadores de exclamação o primeiro converte null para boleano e o segunda faz a verificação se a tarefa está ativa
+          defaultValue={lastTaskName}
         />
       </div>
 
